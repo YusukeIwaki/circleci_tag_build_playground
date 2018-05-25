@@ -1,0 +1,36 @@
+version: 2
+jobs:
+  normal_build:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - run:
+          name: play1
+          command: node --version
+
+  release_build:
+    docker:
+      - image: circleci/ruby
+    steps:
+      - checkout
+      - run:
+          name: play2
+          command: ruby --version
+
+workflows:
+  version: 2
+  un-tagged-build:
+    jobs:
+      - normal_build:
+          filters:
+            tags:
+              ignore: /^v[0-9]+(\..*)?/
+  tagged-build:
+    jobs:
+      - release_build:
+          filters:
+            branches:
+              ignore: /.*/
+	        tags:
+	          only: /^v[0-9]+(\..*)?/
